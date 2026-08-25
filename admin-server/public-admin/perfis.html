@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Perfis e permissões | Área restrita ECC Bom Pastor</title>
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h2>ECC Bom Pastor</h2>
+      <div class="user-info" id="user-info">Carregando…</div>
+      <nav id="sidebar-nav"></nav>
+      <button class="logout-btn" id="logout-btn">Sair</button>
+    </aside>
+    <main class="content">
+      <h1>Perfis e permissões</h1>
+      <p>Cada perfil define o que os usuários daquele perfil conseguem ver e fazer na área restrita.</p>
+      <div class="card">
+        <table id="matrix-table">
+          <thead><tr id="matrix-head"></tr></thead>
+          <tbody id="matrix-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script src="/admin/js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await initShell('/admin/perfis.html');
+      if (!user) return;
+      const data = await api('/admin/api/perfis');
+      const relSet = new Set(data.perfil_permissoes.map((r) => `${r.perfil_id}:${r.permissao_id}`));
+
+      const head = document.getElementById('matrix-head');
+      head.innerHTML = '<th>Permissão</th>' + data.perfis.map((p) => `<th>${p.nome}</th>`).join('');
+
+      const body = document.getElementById('matrix-body');
+      body.innerHTML = data.permissoes.map((perm) => {
+        const cells = data.perfis.map((perfil) => {
+          const has = relSet.has(`${perfil.id}:${perm.id}`);
+          return `<td style="text-align:center;">${has ? '✅' : '—'}</td>`;
+        }).join('');
+        return `<tr><td>${perm.descricao}</td>${cells}</tr>`;
+      }).join('');
+    });
+  </script>
+</body>
+</html>

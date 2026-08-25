@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Usuários | Área restrita ECC Bom Pastor</title>
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h2>ECC Bom Pastor</h2>
+      <div class="user-info" id="user-info">Carregando…</div>
+      <nav id="sidebar-nav"></nav>
+      <button class="logout-btn" id="logout-btn">Sair</button>
+    </aside>
+    <main class="content">
+      <div class="toolbar">
+        <h1>Usuários</h1>
+        <button class="btn-secondary" id="new-user-btn">+ Novo usuário</button>
+      </div>
+
+      <div class="card hidden" id="form-card">
+        <h3 id="form-title">Novo usuário</h3>
+        <form id="user-form">
+          <input type="hidden" id="user-id" />
+          <div class="form-row">
+            <div>
+              <label for="nome">Nome</label>
+              <input type="text" id="nome" required />
+            </div>
+            <div>
+              <label for="email">E-mail</label>
+              <input type="email" id="email" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="perfil_id">Perfil</label>
+              <select id="perfil_id" required></select>
+            </div>
+            <div>
+              <label for="senha">Senha <span id="senha-hint" style="font-weight:400"></span></label>
+              <input type="password" id="senha" autocomplete="new-password" />
+            </div>
+          </div>
+          <div style="margin-top:1rem; display:flex; gap:.6rem;">
+            <button type="submit" class="btn-primary" style="width:auto;">Salvar</button>
+            <button type="button" class="btn-secondary" id="cancel-btn">Cancelar</button>
+          </div>
+          <div class="error-msg" id="form-msg"></div>
+        </form>
+      </div>
+
+      <table id="users-table">
+        <thead>
+          <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Último login</th><th></th></tr>
+        </thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </main>
+  </div>
+  <script src="/admin/js/common.js"></script>
+  <script src="/admin/js/usuarios.js"></script>
+</body>
+</html>
