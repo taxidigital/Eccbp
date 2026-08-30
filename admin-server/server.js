@@ -5,6 +5,9 @@ const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const pool = require('./db');
 const { requireAuth } = require('./middleware/auth');
+const { ensureUploadDir } = require('./lib/imagem');
+
+ensureUploadDir(); // cria /opt/ecc-uploads/livros se ainda não existir
 
 const app = express();
 app.disable('x-powered-by');
@@ -37,6 +40,7 @@ app.use('/admin/api', require('./routes/auth'));
 app.use('/admin/api/usuarios', require('./routes/usuarios'));
 app.use('/admin/api/perfis', require('./routes/perfis'));
 app.use('/admin/api/pedidos-oracao', require('./routes/oracoes'));
+app.use('/admin/api/livros', require('./routes/livros'));
 app.use('/admin/api', require('./routes/conteudo'));
 
 // Painel estático — protegido por sessão (exceto login e assets públicos do login)

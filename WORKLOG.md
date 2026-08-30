@@ -5,6 +5,36 @@ Formato: `## AAAA-MM-DD — resumo` + o que mudou, commits, pendências.
 
 ---
 
+## 2026-08-30 (2) — Sugestões de leitura (/leituras)
+
+- **Nova feature:** livros recomendados, gerenciados no admin, exibidos em página
+  própria `/leituras`.
+- **Banco:** tabela `livros` (titulo, autor, tema, comentarios, sugerido_por,
+  imagem, publicado, ordem, criado_por) + permissão `livros.gerenciar` (Admin+Editor).
+- **Upload de capa:** `multer` 2.x (dep nova) → `lib/imagem.js` processa via
+  ImageMagick (`convert` + `jpegoptim`): auto-orient, resize máx 600×800, JPEG q82,
+  flatten sobre branco, progressive. Storage em **`/opt/ecc-uploads/livros/`** (fora
+  do repo — sobrevive ao `git reset --hard` do deploy). Servido pelo nginx em
+  `/uploads/`.
+- **Rotas:** `routes/livros.js` → `/admin/api/livros` (GET/POST/PUT/DELETE +
+  `/:id/mover`). Público: `GET /api/public/livros` (só publicados).
+- **Admin:** `public-admin/livros.html` + `js/livros.js` (form com preview de capa,
+  tabela com thumb, reordenar ↑↓, publicado, editar, excluir). Item "Sugestões de
+  leitura" no menu. Upload usa `fetch` + `FormData` (helper `apiForm`, o `api()`
+  força JSON).
+- **Site:** `leituras.html` (página standalone, mesmo visual do site, grid de cards)
+  + link "Leituras" no menu fixo e rodapé do `index.html`.
+- **nginx:** `location ^~ /uploads/` (alias `/opt/ecc-uploads/`, cache 30d) +
+  `location = /leituras` (→ `leituras.html`).
+- **Deploy:** `/usr/local/bin/ecc-deploy` agora usa `CI=true` no `pnpm install`
+  (roda sem TTY) e roda `pnpm seed` automaticamente quando `scripts/seed.js` muda.
+- Testado ponta a ponta (usuário QA temporário, depois removido): upload+resize,
+  validação (sem título, arquivo não-imagem), edição, troca de capa (apaga a antiga),
+  reordenar, filtro de publicados, página pública. Tabela e uploads limpos ao fim.
+- **Pendências:** validar visualmente no navegador (admin + `/leituras`); o
+  `index.html` foi editado à mão (2 linhas de menu) — conferir se o menu mobile
+  ficou ok.
+
 ## 2026-08-30 — git + GitHub + deploy automático + limpeza + rastreabilidade
 
 - **Repo git criado** em `/opt/ecc` e conectado ao GitHub (`taxidigital/Eccbp`,

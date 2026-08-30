@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#12283A">
+<meta name="description" content="Sugestões de leitura da comunidade do ECC Bom Pastor — livros que ajudam a caminhar na fé e no casamento.">
+<link rel="icon" type="image/jpeg" href="/assets/logo.jpeg">
+<title>Sugestões de leitura | ECC Bom Pastor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#12283A; --slate:#2C5877; --gold:#C79A4B; --gold-soft:#E9D6AC;
+    --cream:#FAF5EA; --white:#FFFFFF; --ink:#26221C; --line:rgba(18,40,58,0.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',sans-serif; background:var(--cream); color:var(--ink); line-height:1.6;}
+  h1,h2,h3{font-family:'Fraunces',serif; color:var(--navy); line-height:1.15;}
+  a{color:var(--slate);}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+
+  header{border-bottom:1px solid var(--line); background:var(--cream);}
+  header .wrap{display:flex; align-items:center; justify-content:space-between; padding:18px 24px;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:600; font-size:20px; color:var(--navy); text-decoration:none;}
+  .brand img{height:40px; width:auto;}
+  .back{font-size:14px; font-weight:500; color:var(--navy); text-decoration:none; opacity:.8;}
+  .back:hover{opacity:1;}
+
+  .intro{padding:64px 0 32px;}
+  .intro .eyebrow{font-size:12.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--slate); margin-bottom:16px;}
+  .intro h1{font-size:clamp(30px,4.4vw,46px); margin-bottom:16px;}
+  .intro h1 em{font-style:italic; color:var(--gold);}
+  .intro p{font-size:17px; max-width:560px; color:#4B4438;}
+
+  main{padding:16px 0 90px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:28px;}
+
+  .book{background:var(--white); border:1px solid var(--line); border-radius:6px; overflow:hidden; display:flex; flex-direction:column;}
+  .book-cover{aspect-ratio:3/4; background:var(--gold-soft); overflow:hidden;}
+  .book-cover img{width:100%; height:100%; object-fit:cover; display:block;}
+  .book-cover.none{display:flex; align-items:center; justify-content:center; color:var(--slate); font-family:'Fraunces',serif; font-style:italic; font-size:15px; padding:24px; text-align:center;}
+  .book-body{padding:22px 22px 24px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .book .tema{align-self:flex-start; font-size:11.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--navy); background:var(--gold-soft); padding:4px 10px; border-radius:20px;}
+  .book h3{font-size:20px;}
+  .book .autor{font-size:14px; color:var(--slate); margin-top:-4px;}
+  .book .coment{font-size:14.5px; color:#4B4438; white-space:pre-wrap;}
+  .book .sugerido{margin-top:auto; padding-top:12px; border-top:1px solid var(--line); font-size:13px; color:var(--slate);}
+  .book .sugerido strong{color:var(--navy); font-weight:600;}
+
+  .estado{padding:48px 0; font-family:'Fraunces',serif; font-style:italic; font-size:19px; color:var(--slate);}
+
+  footer{background:var(--navy); color:rgba(250,245,234,0.6); padding:40px 0; font-size:14px;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;}
+  footer a{color:var(--cream);}
+
+  @media (max-width:560px){
+    .intro{padding:40px 0 24px;}
+    .grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a href="/" class="brand"><img src="/assets/logo.jpeg" alt="Logo ECC Bom Pastor"><span>ECC Bom Pastor</span></a>
+    <a href="/" class="back">← Voltar ao site</a>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="wrap">
+    <div class="eyebrow">Caminhada na fé</div>
+    <h1>Sugestões de <em>leitura</em></h1>
+    <p>Livros que casais e amigos da nossa comunidade indicam — para rezar, refletir e crescer juntos no casamento e na vida de família.</p>
+  </div>
+</section>
+
+<main>
+  <div class="wrap">
+    <div class="grid" id="grid"></div>
+    <div class="estado" id="estado">Carregando sugestões…</div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 ECC Bom Pastor · Movimento de Pastoral Familiar</span>
+    <a href="/">eccbp.com.br</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var CAPA_BASE = '/uploads/livros/';
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function card(l){
+    var cover = l.imagem
+      ? '<div class="book-cover"><img loading="lazy" src="'+CAPA_BASE+esc(l.imagem)+'" alt="Capa de '+esc(l.titulo)+'"></div>'
+      : '<div class="book-cover none">'+esc(l.titulo)+'</div>';
+    var tema = l.tema ? '<span class="tema">'+esc(l.tema)+'</span>' : '';
+    var autor = l.autor ? '<div class="autor">'+esc(l.autor)+'</div>' : '';
+    var coment = l.comentarios ? '<div class="coment">'+esc(l.comentarios)+'</div>' : '';
+    var sugerido = l.sugerido_por ? '<div class="sugerido">Sugerido por <strong>'+esc(l.sugerido_por)+'</strong></div>' : '';
+    return '<article class="book">'+cover+'<div class="book-body">'+tema+'<h3>'+esc(l.titulo)+'</h3>'+autor+coment+sugerido+'</div></article>';
+  }
+
+  fetch('/api/public/livros')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var grid = document.getElementById('grid');
+      var estado = document.getElementById('estado');
+      var livros = (data && data.livros) || [];
+      if (!livros.length){
+        estado.textContent = 'Em breve, sugestões de leitura da nossa comunidade.';
+        return;
+      }
+      grid.innerHTML = livros.map(card).join('');
+      estado.style.display = 'none';
+    })
+    .catch(function(){
+      document.getElementById('estado').textContent = 'Não foi possível carregar as sugestões agora. Tente novamente mais tarde.';
+    });
+})();
+</script>
+</body>
+</html>

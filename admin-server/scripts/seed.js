@@ -13,6 +13,7 @@ const PERMISSOES = [
   ['aconselhamento.gerenciar', 'Gerenciar mensagens de aconselhamento (vídeos)'],
   ['oracoes.gerenciar', 'Ver e gerenciar pedidos de oração (Livro de Orações)'],
   ['reconhecimento.gerenciar', 'Gerenciar tópicos da seção "Você reconhece algum desses momentos?"'],
+  ['livros.gerenciar', 'Gerenciar sugestões de leitura (página /leituras)'],
 ];
 
 const PERFIS = [
@@ -138,6 +139,24 @@ async function createTables() {
       atendido TINYINT(1) NOT NULL DEFAULT 0,
       criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS livros (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      titulo VARCHAR(200) NOT NULL,
+      autor VARCHAR(160) NULL,
+      tema VARCHAR(120) NULL,
+      comentarios TEXT NULL,
+      sugerido_por VARCHAR(160) NULL,
+      imagem VARCHAR(255) NULL,
+      publicado TINYINT(1) NOT NULL DEFAULT 0,
+      ordem INT NOT NULL DEFAULT 0,
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      criado_por INT NULL,
+      FOREIGN KEY (criado_por) REFERENCES usuarios(id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
 

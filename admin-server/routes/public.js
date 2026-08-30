@@ -48,6 +48,14 @@ router.get('/topicos-reconhecimento', async (req, res) => {
   res.json({ topicos: rows });
 });
 
+router.get('/livros', async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT id, titulo, autor, tema, comentarios, sugerido_por, imagem FROM livros
+     WHERE publicado = 1 ORDER BY ordem, id`
+  );
+  res.json({ livros: rows });
+});
+
 router.post('/pedidos-oracao', pedidoOracaoLimiter, async (req, res) => {
   const { nome_casal, motivo, deseja_contato, telefone, whatsapp } = req.body || {};
   const nome = String(nome_casal || '').trim();

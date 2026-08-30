@@ -22,6 +22,7 @@ const MENU_ITEMS = [
   { href: '/admin/dashboard.html', label: 'Início', perm: null },
   { href: '/admin/conteudo.html', label: 'Conteúdo do site', perm: ['encontro.editar', 'contato.editar', 'depoimentos.gerenciar', 'aconselhamento.gerenciar', 'reconhecimento.gerenciar'] },
   { href: '/admin/oracoes.html', label: 'Livro de Orações', perm: 'oracoes.gerenciar' },
+  { href: '/admin/livros.html', label: 'Sugestões de leitura', perm: 'livros.gerenciar' },
   { href: '/admin/usuarios.html', label: 'Usuários', perm: 'usuarios.gerenciar' },
   { href: '/admin/perfis.html', label: 'Perfis e permissões', perm: 'usuarios.gerenciar' },
 ];

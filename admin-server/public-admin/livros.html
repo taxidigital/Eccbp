@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Sugestões de leitura | Área restrita ECC Bom Pastor</title>
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+  <style>
+    .livro-thumb{ width:44px; height:60px; object-fit:cover; border-radius:3px; background:#eef2f5; }
+    .livro-thumb.vazio{ display:inline-block; }
+    .livro-ordem button{ width:auto; padding:.15rem .45rem; background:#e7ebee; color:var(--texto); font-size:.8rem; }
+    .livro-ordem button:disabled{ opacity:.4; cursor:default; }
+    .livro-vazio{ color:#64707a; padding:1.5rem 0; }
+    .capa-preview{ margin-top:.5rem; }
+    .capa-preview img{ max-width:150px; border-radius:4px; border:1px solid var(--borda); }
+    .form-actions{ display:flex; gap:.6rem; align-items:center; margin-top:1.2rem; }
+    .form-actions .btn-primary{ width:auto; margin-top:0; }
+    .check-inline{ display:flex; align-items:center; gap:.5rem; margin:1rem 0 0; }
+    .check-inline input{ width:auto; }
+    .check-inline label{ margin:0; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h2>ECC Bom Pastor</h2>
+      <div class="user-info" id="user-info">Carregando…</div>
+      <nav id="sidebar-nav"></nav>
+      <button class="logout-btn" id="logout-btn">Sair</button>
+    </aside>
+    <main class="content">
+      <h1>Sugestões de leitura</h1>
+      <p>Livros recomendados que aparecem na página <a href="/leituras" target="_blank" rel="noopener">/leituras</a> do site. Só os marcados como publicados ficam visíveis; a ordem da lista é a ordem de exibição.</p>
+
+      <div class="toolbar">
+        <span></span>
+        <button class="btn-secondary" id="novo-btn">+ Novo livro</button>
+      </div>
+
+      <div class="card hidden" id="form-card">
+        <h3 id="form-title">Novo livro</h3>
+        <form id="livro-form">
+          <input type="hidden" id="livro-id" />
+          <label for="f-titulo">Título *</label>
+          <input type="text" id="f-titulo" maxlength="200" required />
+
+          <div class="form-row">
+            <div>
+              <label for="f-autor">Autor</label>
+              <input type="text" id="f-autor" maxlength="160" />
+            </div>
+            <div>
+              <label for="f-tema">Tema</label>
+              <input type="text" id="f-tema" maxlength="120" placeholder="Ex.: Espiritualidade conjugal" />
+            </div>
+          </div>
+
+          <label for="f-sugerido">Sugerido por</label>
+          <input type="text" id="f-sugerido" maxlength="160" placeholder="Ex.: Pe. João · Casal Silva e Ana" />
+
+          <label for="f-comentarios">Comentários</label>
+          <textarea id="f-comentarios" rows="5" maxlength="4000" placeholder="Por que vale a leitura, para quem é indicado…"></textarea>
+
+          <label for="f-imagem">Foto da capa (JPG, PNG ou WebP — máx. 8 MB)</label>
+          <input type="file" id="f-imagem" accept="image/jpeg,image/png,image/webp" />
+          <div class="capa-preview hidden" id="capa-preview">
+            <img id="capa-preview-img" alt="Prévia da capa" />
+            <div><label class="check-inline"><input type="checkbox" id="f-remover-imagem" /> Remover a capa atual</label></div>
+          </div>
+
+          <div class="check-inline">
+            <input type="checkbox" id="f-publicado" />
+            <label for="f-publicado">Publicado (visível no site)</label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Salvar</button>
+            <button type="button" class="btn-secondary" id="cancelar-btn">Cancelar</button>
+            <span class="error-msg" id="form-msg"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <table id="livros-table">
+          <thead>
+            <tr><th>Ordem</th><th>Capa</th><th>Título</th><th>Tema</th><th>Sugerido por</th><th>Publicado</th><th></th></tr>
+          </thead>
+          <tbody id="livros-tbody"></tbody>
+        </table>
+        <div class="livro-vazio hidden" id="livros-vazio">Nenhum livro cadastrado ainda.</div>
+      </div>
+    </main>
+  </div>
+  <script src="/admin/js/common.js"></script>
+  <script src="/admin/js/livros.js"></script>
+</body>
+</html>
