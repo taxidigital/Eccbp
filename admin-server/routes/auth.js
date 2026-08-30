@@ -75,7 +75,10 @@ router.post('/logout', requireAuth, (req, res) => {
   });
 });
 
-router.get('/me', requireAuth, (req, res) => {
+router.get('/me', requireAuth, async (req, res) => {
+  // recarrega as permissões do banco a cada chamada: evita sessão presa com
+  // permissões antigas quando um perfil ganha/perde acesso após o login
+  req.session.user.permissoes = await loadPermissoes(req.session.user.perfil_id);
   res.json({ user: req.session.user, csrfToken: req.session.csrfToken });
 });
 

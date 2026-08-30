@@ -64,10 +64,10 @@ function extractYouTubeId(url) {
   return m ? m[1] : null;
 }
 
-function setupVideoPreview() {
-  const input = document.getElementById('dep-video');
-  const preview = document.getElementById('dep-video-preview');
-  const msg = document.getElementById('dep-video-msg');
+function setupVideoPreview(inputId, previewId, msgId) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  const msg = document.getElementById(msgId);
 
   input.addEventListener('input', () => {
     const value = input.value.trim();
@@ -138,7 +138,7 @@ async function setupDepoimentos(user) {
     document.getElementById('dep-video').dispatchEvent(new Event('input'));
   }
 
-  setupVideoPreview();
+  setupVideoPreview('dep-video', 'dep-video-preview', 'dep-video-msg');
   document.getElementById('new-dep-btn').addEventListener('click', () => openDepForm(null));
   document.getElementById('dep-cancel-btn').addEventListener('click', () => {
     document.getElementById('dep-form-card').classList.add('hidden');
@@ -170,10 +170,184 @@ async function setupDepoimentos(user) {
   reload();
 }
 
+async function setupAconselhamento(user) {
+  const card = document.getElementById('aconselhamento-card');
+  if (!user.permissoes.includes('aconselhamento.gerenciar')) { card.classList.add('hidden'); return; }
+
+  async function reload() {
+    const data = await api('/admin/api/aconselhamentos');
+    const tbody = document.getElementById('acon-tbody');
+    tbody.innerHTML = data.aconselhamentos.map((a) => `
+      <tr>
+        <td>${a.titulo}</td>
+        <td>${a.video_url ? '🎥' : '—'}</td>
+        <td>${a.publicado ? '✅' : '—'}</td>
+        <td>
+          <button class="btn-secondary" data-edit="${a.id}">Editar</button>
+          <button class="btn-danger" data-del="${a.id}">Excluir</button>
+        </td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('[data-edit]').forEach((btn) => {
+      btn.addEventListener('click', () => openAconForm(data.aconselhamentos.find((a) => a.id == btn.dataset.edit)));
+    });
+    tbody.querySelectorAll('[data-del]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Excluir este vídeo de aconselhamento?')) return;
+        await api(`/admin/api/aconselhamentos/${btn.dataset.del}`, { method: 'DELETE' });
+        reload();
+      });
+    });
+  }
+
+  function openAconForm(acon) {
+    document.getElementById('acon-form-card').classList.remove('hidden');
+    document.getElementById('acon-form-msg').textContent = '';
+    document.getElementById('acon-form').reset();
+    document.getElementById('acon-id').value = acon ? acon.id : '';
+    if (acon) {
+      document.getElementById('acon-titulo').value = acon.titulo;
+      document.getElementById('acon-descricao').value = acon.descricao || '';
+      document.getElementById('acon-video').value = acon.video_url || '';
+      document.getElementById('acon-publicado').checked = !!acon.publicado;
+    }
+    document.getElementById('acon-video').dispatchEvent(new Event('input'));
+  }
+
+  setupVideoPreview('acon-video', 'acon-video-preview', 'acon-video-msg');
+  document.getElementById('new-acon-btn').addEventListener('click', () => openAconForm(null));
+  document.getElementById('acon-cancel-btn').addEventListener('click', () => {
+    document.getElementById('acon-form-card').classList.add('hidden');
+  });
+
+  document.getElementById('acon-form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const id = document.getElementById('acon-id').value;
+    const body = {
+      titulo: document.getElementById('acon-titulo').value,
+      descricao: document.getElementById('acon-descricao').value,
+      video_url: document.getElementById('acon-video').value,
+      publicado: document.getElementById('acon-publicado').checked,
+    };
+    try {
+      if (id) {
+        await api(`/admin/api/aconselhamentos/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      } else {
+        await api('/admin/api/aconselhamentos', { method: 'POST', body: JSON.stringify(body) });
+      }
+      document.getElementById('acon-form-card').classList.add('hidden');
+      reload();
+    } catch (e2) {
+      document.getElementById('acon-form-msg').textContent = e2.message;
+    }
+  });
+
+  reload();
+}
+
+async function setupReconhecimento(user) {
+  const card = document.getElementById('reconhecimento-card');
+  if (!user.permissoes.includes('reconhecimento.gerenciar')) { card.classList.add('hidden'); return; }
+
+  async function reload() {
+    const data = await api('/admin/api/topicos-reconhecimento');
+    const topicos = data.topicos;
+    const tbody = document.getElementById('reco-tbody');
+    tbody.innerHTML = topicos.map((t, i) => `
+      <tr>
+        <td style="white-space:nowrap;">
+          <button class="btn-secondary" data-up="${t.id}" ${i === 0 ? 'disabled' : ''} title="Mover para cima">↑</button>
+          <button class="btn-secondary" data-down="${t.id}" ${i === topicos.length - 1 ? 'disabled' : ''} title="Mover para baixo">↓</button>
+        </td>
+        <td>${t.titulo}</td>
+        <td><input type="checkbox" data-ativo="${t.id}" ${t.ativo ? 'checked' : ''} style="width:auto;" /></td>
+        <td>
+          <button class="btn-secondary" data-edit="${t.id}">Editar</button>
+          <button class="btn-danger" data-del="${t.id}">Excluir</button>
+        </td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('[data-up]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        await api(`/admin/api/topicos-reconhecimento/${btn.dataset.up}/mover`, { method: 'PUT', body: JSON.stringify({ direcao: 'cima' }) });
+        reload();
+      });
+    });
+    tbody.querySelectorAll('[data-down]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        await api(`/admin/api/topicos-reconhecimento/${btn.dataset.down}/mover`, { method: 'PUT', body: JSON.stringify({ direcao: 'baixo' }) });
+        reload();
+      });
+    });
+    tbody.querySelectorAll('[data-ativo]').forEach((chk) => {
+      chk.addEventListener('change', async () => {
+        await api(`/admin/api/topicos-reconhecimento/${chk.dataset.ativo}`, { method: 'PUT', body: JSON.stringify({ ativo: chk.checked }) });
+        reload();
+      });
+    });
+    tbody.querySelectorAll('[data-edit]').forEach((btn) => {
+      btn.addEventListener('click', () => openRecoForm(topicos.find((t) => t.id == btn.dataset.edit)));
+    });
+    tbody.querySelectorAll('[data-del]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Excluir este tópico?')) return;
+        await api(`/admin/api/topicos-reconhecimento/${btn.dataset.del}`, { method: 'DELETE' });
+        reload();
+      });
+    });
+  }
+
+  function openRecoForm(topico) {
+    document.getElementById('reco-form-card').classList.remove('hidden');
+    document.getElementById('reco-form-msg').textContent = '';
+    document.getElementById('reco-form').reset();
+    document.getElementById('reco-id').value = topico ? topico.id : '';
+    if (topico) {
+      document.getElementById('reco-titulo').value = topico.titulo;
+      document.getElementById('reco-texto').value = topico.texto;
+      document.getElementById('reco-ativo').checked = !!topico.ativo;
+    } else {
+      document.getElementById('reco-ativo').checked = true;
+    }
+  }
+
+  document.getElementById('new-reco-btn').addEventListener('click', () => openRecoForm(null));
+  document.getElementById('reco-cancel-btn').addEventListener('click', () => {
+    document.getElementById('reco-form-card').classList.add('hidden');
+  });
+
+  document.getElementById('reco-form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const id = document.getElementById('reco-id').value;
+    const body = {
+      titulo: document.getElementById('reco-titulo').value,
+      texto: document.getElementById('reco-texto').value,
+      ativo: document.getElementById('reco-ativo').checked,
+    };
+    try {
+      if (id) {
+        await api(`/admin/api/topicos-reconhecimento/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      } else {
+        await api('/admin/api/topicos-reconhecimento', { method: 'POST', body: JSON.stringify(body) });
+      }
+      document.getElementById('reco-form-card').classList.add('hidden');
+      reload();
+    } catch (e2) {
+      document.getElementById('reco-form-msg').textContent = e2.message;
+    }
+  });
+
+  reload();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await initShell('/admin/conteudo.html');
   if (!user) return;
   await setupEncontro(user);
   await setupContato(user);
   await setupDepoimentos(user);
+  await setupAconselhamento(user);
+  await setupReconhecimento(user);
 });

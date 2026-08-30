@@ -99,4 +99,112 @@ router.delete('/depoimentos/:id', requireAuth, requirePermission('depoimentos.ge
   res.json({ ok: true });
 });
 
+// --- Aconselhamento ---
+router.get('/aconselhamentos', requireAuth, requirePermission('aconselhamento.gerenciar'), async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM aconselhamentos ORDER BY ordem, id');
+  res.json({ aconselhamentos: rows });
+});
+
+router.post('/aconselhamentos', requireAuth, requirePermission('aconselhamento.gerenciar'), requireCsrf, async (req, res) => {
+  const { titulo, descricao, video_url, publicado, ordem } = req.body || {};
+  if (!titulo || !video_url) {
+    return res.status(400).json({ error: 'titulo e video_url são obrigatórios.' });
+  }
+  const videoResolved = resolveVideoUrl(video_url);
+  if (!videoResolved.ok || !videoResolved.value) {
+    return res.status(400).json({ error: videoResolved.error || 'O link de vídeo é obrigatório.' });
+  }
+
+  const [result] = await pool.query(
+    `INSERT INTO aconselhamentos (titulo, descricao, video_url, publicado, ordem, criado_por)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [titulo, descricao || null, videoResolved.value, publicado ? 1 : 0, ordem || 0, req.session.user.id]
+  );
+  res.status(201).json({ id: result.insertId });
+});
+
+router.put('/aconselhamentos/:id', requireAuth, requirePermission('aconselhamento.gerenciar'), requireCsrf, async (req, res) => {
+  const { titulo, descricao, video_url, publicado, ordem } = req.body || {};
+  const fields = [];
+  const values = [];
+  if (titulo !== undefined) { fields.push('titulo = ?'); values.push(titulo); }
+  if (descricao !== undefined) { fields.push('descricao = ?'); values.push(descricao || null); }
+  if (video_url !== undefined) {
+    const videoResolved = resolveVideoUrl(video_url);
+    if (!videoResolved.ok || !videoResolved.value) {
+      return res.status(400).json({ error: videoResolved.error || 'O link de vídeo é obrigatório.' });
+    }
+    fields.push('video_url = ?'); values.push(videoResolved.value);
+  }
+  if (publicado !== undefined) { fields.push('publicado = ?'); values.push(publicado ? 1 : 0); }
+  if (ordem !== undefined) { fields.push('ordem = ?'); values.push(ordem); }
+  if (!fields.length) return res.status(400).json({ error: 'Nada para atualizar.' });
+
+  values.push(req.params.id);
+  await pool.query(`UPDATE aconselhamentos SET ${fields.join(', ')} WHERE id = ?`, values);
+  res.json({ ok: true });
+});
+
+router.delete('/aconselhamentos/:id', requireAuth, requirePermission('aconselhamento.gerenciar'), requireCsrf, async (req, res) => {
+  await pool.query('DELETE FROM aconselhamentos WHERE id = ?', [req.params.id]);
+  res.json({ ok: true });
+});
+
+// --- Tópicos de reconhecimento ---
+router.get('/topicos-reconhecimento', requireAuth, requirePermission('reconhecimento.gerenciar'), async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM topicos_reconhecimento ORDER BY ordem, id');
+  res.json({ topicos: rows });
+});
+
+router.post('/topicos-reconhecimento', requireAuth, requirePermission('reconhecimento.gerenciar'), requireCsrf, async (req, res) => {
+  const { titulo, texto, ativo } = req.body || {};
+  if (!titulo || !texto) {
+    return res.status(400).json({ error: 'titulo e texto são obrigatórios.' });
+  }
+  const [[{ maxOrdem }]] = await pool.query('SELECT COALESCE(MAX(ordem), -1) AS maxOrdem FROM topicos_reconhecimento');
+  const [result] = await pool.query(
+    `INSERT INTO topicos_reconhecimento (titulo, texto, ativo, ordem, criado_por)
+     VALUES (?, ?, ?, ?, ?)`,
+    [titulo, texto, ativo === undefined ? 1 : (ativo ? 1 : 0), maxOrdem + 1, req.session.user.id]
+  );
+  res.status(201).json({ id: result.insertId });
+});
+
+router.put('/topicos-reconhecimento/:id', requireAuth, requirePermission('reconhecimento.gerenciar'), requireCsrf, async (req, res) => {
+  const { titulo, texto, ativo } = req.body || {};
+  const fields = [];
+  const values = [];
+  if (titulo !== undefined) { fields.push('titulo = ?'); values.push(titulo); }
+  if (texto !== undefined) { fields.push('texto = ?'); values.push(texto); }
+  if (ativo !== undefined) { fields.push('ativo = ?'); values.push(ativo ? 1 : 0); }
+  if (!fields.length) return res.status(400).json({ error: 'Nada para atualizar.' });
+
+  values.push(req.params.id);
+  await pool.query(`UPDATE topicos_reconhecimento SET ${fields.join(', ')} WHERE id = ?`, values);
+  res.json({ ok: true });
+});
+
+router.put('/topicos-reconhecimento/:id/mover', requireAuth, requirePermission('reconhecimento.gerenciar'), requireCsrf, async (req, res) => {
+  const { direcao } = req.body || {};
+  if (direcao !== 'cima' && direcao !== 'baixo') {
+    return res.status(400).json({ error: 'direcao precisa ser "cima" ou "baixo".' });
+  }
+  const [rows] = await pool.query('SELECT id, ordem FROM topicos_reconhecimento ORDER BY ordem, id');
+  const idx = rows.findIndex((r) => r.id === Number(req.params.id));
+  if (idx === -1) return res.status(404).json({ error: 'Tópico não encontrado.' });
+  const swapIdx = direcao === 'cima' ? idx - 1 : idx + 1;
+  if (swapIdx < 0 || swapIdx >= rows.length) return res.json({ ok: true }); // já está na ponta, nada a fazer
+
+  const atual = rows[idx];
+  const vizinho = rows[swapIdx];
+  await pool.query('UPDATE topicos_reconhecimento SET ordem = ? WHERE id = ?', [vizinho.ordem, atual.id]);
+  await pool.query('UPDATE topicos_reconhecimento SET ordem = ? WHERE id = ?', [atual.ordem, vizinho.id]);
+  res.json({ ok: true });
+});
+
+router.delete('/topicos-reconhecimento/:id', requireAuth, requirePermission('reconhecimento.gerenciar'), requireCsrf, async (req, res) => {
+  await pool.query('DELETE FROM topicos_reconhecimento WHERE id = ?', [req.params.id]);
+  res.json({ ok: true });
+});
+
 module.exports = router;

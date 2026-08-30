@@ -1,42 +1,12 @@
 (function () {
   'use strict';
 
-  function walkTextNodes(root) {
-    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-    var nodes = [];
-    var n;
-    while ((n = walker.nextNode())) nodes.push(n);
-    return nodes;
-  }
-
-  function replaceExactText(oldText, newText) {
-    if (!newText || newText === oldText) return false;
-    var nodes = walkTextNodes(document.body);
-    var replaced = false;
-    for (var i = 0; i < nodes.length; i++) {
-      if (nodes[i].nodeValue.trim() === oldText) {
-        nodes[i].nodeValue = newText;
-        replaced = true;
-      }
-    }
-    return replaced;
-  }
-
-  function updateInscricaoLinks(url) {
-    if (!url) return;
-    document.querySelectorAll('a[href*="forms.gle"]').forEach(function (a) {
-      a.href = url;
+  function setText(ids, value) {
+    if (!value) return;
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = value;
     });
-  }
-
-  function applyEncontroOnce(data) {
-    var any = false;
-    if (data.data_texto) any = replaceExactText('Próximo encontro · 2026', data.data_texto) || any;
-    if (data.local_texto) any = replaceExactText('Grande São Paulo', data.local_texto) || any;
-    if (data.preco_texto) any = replaceExactText('R$ 800,00 por casal', data.preco_texto) || any;
-    if (data.parcelamento_texto) any = replaceExactText('Consulte opções de parcelamento', data.parcelamento_texto) || any;
-    updateInscricaoLinks(data.link_inscricao);
-    return any;
   }
 
   async function applyEncontro() {
@@ -44,37 +14,18 @@
       var res = await fetch('/api/public/encontro');
       if (!res.ok) return;
       var data = await res.json();
-      var tentativas = 0;
-      var tentar = function () {
-        var ok = applyEncontroOnce(data);
-        tentativas++;
-        if (!ok && tentativas < 6) setTimeout(tentar, 350);
-      };
-      tentar();
-    } catch (e) {
-      // Falha de rede: mantém o texto estático atual do site.
-    }
-  }
-
-  function applyContatoToast(contato) {
-    if (!contato || (!contato.whatsapp && !contato.email)) return;
-    var partes = [];
-    if (contato.whatsapp) partes.push('WhatsApp: ' + contato.whatsapp);
-    if (contato.email) partes.push('E-mail: ' + contato.email);
-    var textoContato = partes.join(' · ');
-
-    var observer = new MutationObserver(function () {
-      var nodes = walkTextNodes(document.body);
-      for (var i = 0; i < nodes.length; i++) {
-        var v = nodes[i].nodeValue.trim();
-        if (v === 'Canal de contato em atualização') {
-          nodes[i].nodeValue = 'Fale com a gente';
-        } else if (v === 'Em breve, a equipe local informará WhatsApp, e-mail e local.') {
-          nodes[i].nodeValue = textoContato;
-        }
+      setText(['encontro-data', 'encontro-data-2'], data.data_texto);
+      setText(['encontro-local', 'encontro-local-2'], data.local_texto);
+      setText(['encontro-preco', 'encontro-preco-2'], data.preco_texto);
+      setText(['encontro-parcelamento'], data.parcelamento_texto);
+      if (data.link_inscricao) {
+        document.querySelectorAll('.js-link-inscricao').forEach(function (a) {
+          a.href = data.link_inscricao;
+        });
       }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    } catch (e) {
+      // falha de rede: mantém o texto estático do HTML
+    }
   }
 
   async function applyContato() {
@@ -82,9 +33,30 @@
       var res = await fetch('/api/public/contato');
       if (!res.ok) return;
       var contato = await res.json();
-      applyContatoToast(contato);
+      if (!contato.whatsapp && !contato.email) return;
+
+      var status = document.getElementById('contato-status');
+      if (status) status.textContent = 'Fale com a gente';
+
+      var partes = [];
+      if (contato.whatsapp) partes.push('WhatsApp: ' + contato.whatsapp);
+      if (contato.email) partes.push('E-mail: ' + contato.email);
+      var detalhe = document.getElementById('contato-detalhe');
+      if (detalhe && partes.length) {
+        detalhe.textContent = partes.join(' · ');
+        detalhe.style.display = '';
+      }
+
+      if (contato.whatsapp) {
+        var wa = document.getElementById('contato-whatsapp-link');
+        if (wa) {
+          var digits = contato.whatsapp.replace(/\D/g, '');
+          wa.href = 'https://wa.me/' + digits;
+          wa.style.display = '';
+        }
+      }
     } catch (e) {
-      // Falha de rede: toast continua com o texto padrão "em atualização".
+      // falha de rede: mantém o placeholder "em atualização"
     }
   }
 
@@ -96,8 +68,7 @@
 
   function renderVideoEmbed(videoId, titulo) {
     var wrap = document.createElement('div');
-    wrap.style.cssText = 'position:relative;width:100%;padding-bottom:56.25%;height:0;margin:.9rem 0;border-radius:10px;overflow:hidden;';
-
+    wrap.className = 't-video';
     var iframe = document.createElement('iframe');
     iframe.src = 'https://www.youtube-nocookie.com/embed/' + videoId;
     iframe.title = 'Depoimento em vídeo — ' + titulo;
@@ -105,34 +76,44 @@
     iframe.setAttribute('frameborder', '0');
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     iframe.allowFullscreen = true;
-    iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0;';
-
     wrap.appendChild(iframe);
     return wrap;
   }
 
+  function initials(nomeCasal) {
+    return String(nomeCasal || '')
+      .split(/\s+(?:e|&)\s+/i)
+      .map(function (n) { return n.trim().charAt(0); })
+      .filter(Boolean)
+      .join('&')
+      .toUpperCase();
+  }
+
   function renderDepoimentoCard(dep) {
     var card = document.createElement('div');
-    card.className = 'testimony-card reveal-up';
-    var mark = document.createElement('span');
-    mark.className = 'testimony-mark';
-    mark.textContent = '“';
-    var p = document.createElement('p');
-    p.textContent = dep.texto;
-    var footer = document.createElement('p');
-    footer.style.marginTop = '.75rem';
-    footer.style.fontWeight = '600';
-    footer.textContent = '— ' + dep.nome_casal;
+    card.className = 't-card reveal in';
 
-    card.appendChild(mark);
+    var p = document.createElement('p');
+    p.textContent = '“' + dep.texto + '”';
     card.appendChild(p);
 
     var videoId = extractYouTubeId(dep.video_url);
-    if (videoId) {
-      card.appendChild(renderVideoEmbed(videoId, dep.nome_casal));
-    }
+    if (videoId) card.appendChild(renderVideoEmbed(videoId, dep.nome_casal));
 
-    card.appendChild(footer);
+    var who = document.createElement('div');
+    who.className = 't-who';
+    var avatar = document.createElement('div');
+    avatar.className = 't-avatar';
+    avatar.textContent = initials(dep.nome_casal);
+    var meta = document.createElement('div');
+    var name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = dep.nome_casal;
+    meta.appendChild(name);
+    who.appendChild(avatar);
+    who.appendChild(meta);
+    card.appendChild(who);
+
     return card;
   }
 
@@ -142,15 +123,192 @@
       if (!res.ok) return;
       var data = await res.json();
       var lista = data.depoimentos || [];
-      if (!lista.length) return; // nada publicado/autorizado ainda: mantém o placeholder atual
+      if (!lista.length) return; // nada publicado/autorizado ainda: mantém o placeholder
 
-      var layout = document.querySelector('.testimony-layout');
-      if (!layout) return;
-      layout.querySelectorAll('.testimony-card').forEach(function (el) { el.remove(); });
-      lista.forEach(function (dep) { layout.appendChild(renderDepoimentoCard(dep)); });
+      var container = document.getElementById('depoimentos-lista');
+      if (!container) return;
+      var placeholder = document.getElementById('depoimentos-placeholder');
+      if (placeholder) placeholder.remove();
+      lista.forEach(function (dep) { container.appendChild(renderDepoimentoCard(dep)); });
     } catch (e) {
-      // Falha de rede: mantém o placeholder "em construção".
+      // falha de rede: mantém o placeholder "em construção"
     }
+  }
+
+  function renderAconselhamentoCard(acon) {
+    var card = document.createElement('div');
+    card.className = 't-card ac-card reveal in';
+
+    var videoId = extractYouTubeId(acon.video_url);
+    if (videoId) card.appendChild(renderVideoEmbed(videoId, acon.titulo));
+
+    var title = document.createElement('div');
+    title.className = 'ac-title';
+    title.textContent = acon.titulo;
+    card.appendChild(title);
+
+    if (acon.descricao) {
+      var desc = document.createElement('p');
+      desc.className = 'ac-desc';
+      desc.textContent = acon.descricao;
+      card.appendChild(desc);
+    }
+
+    return card;
+  }
+
+  function renderPainItem(topico) {
+    var item = document.createElement('div');
+    item.className = 'pain-item reveal in';
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'pain-toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    var span = document.createElement('span');
+    span.className = 'pain-title';
+    span.textContent = topico.titulo;
+    var more = document.createElement('span');
+    more.className = 'pain-more';
+    more.textContent = 'Saiba mais';
+    toggle.appendChild(span);
+    toggle.appendChild(more);
+
+    var body = document.createElement('div');
+    body.className = 'pain-body';
+    var inner = document.createElement('div');
+    inner.className = 'pain-body-inner';
+    var p = document.createElement('p');
+    p.textContent = topico.texto;
+    inner.appendChild(p);
+    body.appendChild(inner);
+
+    item.appendChild(toggle);
+    item.appendChild(body);
+    return item;
+  }
+
+  async function applyReconhecimento() {
+    try {
+      var res = await fetch('/api/public/topicos-reconhecimento');
+      if (!res.ok) return;
+      var data = await res.json();
+      var lista = data.topicos || [];
+      if (!lista.length) return; // nada ativo: mantém os tópicos padrão já no HTML
+
+      var container = document.getElementById('pain-list');
+      if (!container) return;
+      container.innerHTML = '';
+      lista.forEach(function (t) { container.appendChild(renderPainItem(t)); });
+    } catch (e) {
+      // falha de rede: mantém os tópicos padrão do HTML
+    }
+  }
+
+  function setupPainToggle() {
+    var list = document.getElementById('pain-list');
+    if (!list) return;
+    list.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.pain-toggle');
+      if (!btn) return;
+      var item = btn.closest('.pain-item');
+      var isOpen = item.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      var more = btn.querySelector('.pain-more');
+      if (more) more.textContent = isOpen ? 'Saiba menos' : 'Saiba mais';
+    });
+  }
+
+  async function applyAconselhamento() {
+    try {
+      var res = await fetch('/api/public/aconselhamento');
+      if (!res.ok) return;
+      var data = await res.json();
+      var lista = data.aconselhamentos || [];
+      if (!lista.length) return; // nada publicado ainda: mantém o placeholder
+
+      var container = document.getElementById('aconselhamento-lista');
+      if (!container) return;
+      var placeholder = document.getElementById('aconselhamento-placeholder');
+      if (placeholder) placeholder.remove();
+      lista.forEach(function (acon) { container.appendChild(renderAconselhamentoCard(acon)); });
+    } catch (e) {
+      // falha de rede: mantém o placeholder "em construção"
+    }
+  }
+
+  function setupPrayForm() {
+    var form = document.getElementById('pray-form');
+    if (!form) return;
+
+    var deseja = document.getElementById('pray-deseja-contato');
+    var contatoFields = document.getElementById('pray-contato-fields');
+    deseja.addEventListener('change', function () {
+      contatoFields.style.display = deseja.checked ? 'grid' : 'none';
+    });
+
+    var msg = document.getElementById('pray-msg');
+    var submitBtn = document.getElementById('pray-submit-btn');
+
+    form.addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      msg.textContent = '';
+
+      var nome = document.getElementById('pray-nome').value.trim();
+      if (!nome) {
+        msg.textContent = 'Informe o nome do casal.';
+        return;
+      }
+      var querContato = deseja.checked;
+      var telefone = document.getElementById('pray-telefone').value.trim();
+      var whatsapp = document.getElementById('pray-whatsapp').value.trim();
+      if (querContato && !telefone && !whatsapp) {
+        msg.textContent = 'Informe ao menos um telefone ou WhatsApp para contato.';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      try {
+        var res = await fetch('/api/public/pedidos-oracao', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nome_casal: nome,
+            motivo: document.getElementById('pray-motivo').value.trim(),
+            deseja_contato: querContato,
+            telefone: telefone,
+            whatsapp: whatsapp,
+          }),
+        });
+        var data = await res.json().catch(function () { return {}; });
+        if (!res.ok) {
+          msg.textContent = data.error || 'Não foi possível enviar o pedido. Tente novamente.';
+          return;
+        }
+        form.style.display = 'none';
+        document.getElementById('pray-success').style.display = 'block';
+      } catch (e) {
+        msg.textContent = 'Não foi possível enviar o pedido agora. Tente novamente em instantes.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar pedido';
+      }
+    });
+  }
+
+  function setupReveal() {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function (el) { io.observe(el); });
   }
 
   function rafThrottle(fn) {
@@ -158,99 +316,57 @@
     return function () {
       if (ticking) return;
       ticking = true;
-      window.requestAnimationFrame(function () {
-        fn();
-        ticking = false;
-      });
+      window.requestAnimationFrame(function () { fn(); ticking = false; });
     };
   }
 
-  function enhanceNavigation() {
-    var header = document.querySelector('.site-header');
+  function setupHeaderScroll() {
+    var header = document.querySelector('header');
     if (!header) return;
-
-    // Garante que a seção de depoimentos tenha um id e um item no menu
-    // (hoje "Histórias" não existe na navegação original do site).
-    var testimonySection = document.querySelector('.testimony-section');
-    if (testimonySection && !testimonySection.id) {
-      testimonySection.id = 'historias';
-    }
-
-    var desktopNav = document.querySelector('.desktop-nav');
-    if (testimonySection && desktopNav && !desktopNav.querySelector('a[href="#historias"]')) {
-      var link = document.createElement('a');
-      link.href = '#historias';
-      link.className = 'nav-link';
-      link.textContent = 'Histórias';
-      desktopNav.appendChild(link);
-    }
-
-    function ensureMobileLink() {
-      var mobileNav = document.querySelector('.mobile-nav');
-      if (mobileNav && testimonySection && !mobileNav.querySelector('a[href="#historias"]')) {
-        var a = document.createElement('a');
-        a.href = '#historias';
-        a.textContent = 'Histórias';
-        mobileNav.insertBefore(a, mobileNav.lastElementChild);
-      }
-    }
-    // .mobile-nav só existe no DOM quando o usuário abre o menu hambúrguer
-    // (montagem condicional do React), então observamos o cabeçalho pra reagir a isso.
-    new MutationObserver(ensureMobileLink).observe(header, { childList: true, subtree: true });
-
-    // Cabeçalho ganha fundo sólido depois que a página rola além do início
-    var onHeaderScroll = rafThrottle(function () {
-      if (window.scrollY > 24) header.classList.add('is-scrolled');
-      else header.classList.remove('is-scrolled');
+    var onScroll = rafThrottle(function () {
+      header.classList.toggle('is-scrolled', window.scrollY > 24);
     });
-    onHeaderScroll();
-    window.addEventListener('scroll', onHeaderScroll, { passive: true });
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
 
-    // Scroll-spy: destaca no menu a seção que está sendo vista no momento
-    var navLinks = Array.prototype.slice.call(document.querySelectorAll('.desktop-nav .nav-link'));
-    var targets = navLinks.map(function (a) {
-      var id = a.getAttribute('href').replace('#', '');
-      var el = document.getElementById(id);
-      return el ? { link: a, el: el } : null;
-    }).filter(Boolean);
+  function setupMobileNav() {
+    var toggle = document.querySelector('.navtoggle');
+    var links = document.querySelector('.navlinks');
+    if (!toggle || !links) return;
+    toggle.addEventListener('click', function () {
+      links.classList.toggle('is-open');
+    });
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { links.classList.remove('is-open'); });
+    });
+  }
 
-    if (targets.length && 'IntersectionObserver' in window) {
-      var spy = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          var match = targets.filter(function (t) { return t.el === entry.target; })[0];
-          if (!match) return;
-          navLinks.forEach(function (l) { l.classList.remove('is-active'); });
-          match.link.classList.add('is-active');
-        });
-      }, { rootMargin: '-100px 0px -60% 0px', threshold: 0 });
-      targets.forEach(function (t) { spy.observe(t.el); });
-    }
-
-    // Botão flutuante "voltar ao topo"
-    var backToTop = document.createElement('button');
-    backToTop.type = 'button';
-    backToTop.className = 'ecc-back-to-top';
-    backToTop.setAttribute('aria-label', 'Voltar ao topo');
-    backToTop.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>';
-    backToTop.addEventListener('click', function () {
+  function setupBackToTop() {
+    var btn = document.querySelector('.back-to-top');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-    document.body.appendChild(backToTop);
-
-    var onBackToTopScroll = rafThrottle(function () {
-      if (window.scrollY > 480) backToTop.classList.add('is-visible');
-      else backToTop.classList.remove('is-visible');
+    var onScroll = rafThrottle(function () {
+      btn.classList.toggle('is-visible', window.scrollY > 480);
     });
-    onBackToTopScroll();
-    window.addEventListener('scroll', onBackToTopScroll, { passive: true });
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
 
   function run() {
+    setupReveal();
+    setupHeaderScroll();
+    setupMobileNav();
+    setupBackToTop();
+    setupPrayForm();
+    setupPainToggle();
     applyEncontro();
     applyContato();
     applyDepoimentos();
-    enhanceNavigation();
+    applyAconselhamento();
+    applyReconhecimento();
   }
 
   if (document.readyState === 'loading') {

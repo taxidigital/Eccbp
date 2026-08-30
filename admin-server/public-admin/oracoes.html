@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Livro de Orações | Área restrita ECC Bom Pastor</title>
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+  <style>
+    .oracao-row.is-atendido{ opacity:.55; }
+    .oracao-motivo{ max-width:340px; white-space:pre-wrap; }
+    .oracao-contato{ font-size:.85rem; white-space:nowrap; }
+    .oracao-vazio{ color:#64707a; padding:1.5rem 0; }
+    .oracao-check{ display:flex; align-items:center; gap:.4rem; width:auto; }
+    .oracao-check input{ width:auto; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h2>ECC Bom Pastor</h2>
+      <div class="user-info" id="user-info">Carregando…</div>
+      <nav id="sidebar-nav"></nav>
+      <button class="logout-btn" id="logout-btn">Sair</button>
+    </aside>
+    <main class="content">
+      <h1>Livro de Orações</h1>
+      <p>Pedidos de oração enviados pelo site, mais recentes primeiro. Pedidos pendentes aparecem no topo.</p>
+
+      <div class="card">
+        <table id="oracoes-table">
+          <thead>
+            <tr><th>Casal</th><th>Motivo</th><th>Contato</th><th>Recebido em</th><th>Atendido</th><th></th></tr>
+          </thead>
+          <tbody id="oracoes-tbody"></tbody>
+        </table>
+        <div class="oracao-vazio hidden" id="oracoes-vazio">Nenhum pedido de oração recebido ainda.</div>
+      </div>
+    </main>
+  </div>
+  <script src="/admin/js/common.js"></script>
+  <script src="/admin/js/oracoes.js"></script>
+</body>
+</html>

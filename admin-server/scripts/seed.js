@@ -10,6 +10,9 @@ const PERMISSOES = [
   ['encontro.editar', 'Editar dados do próximo encontro (data, local, preço, inscrição)'],
   ['contato.editar', 'Editar canal de contato (WhatsApp/e-mail)'],
   ['depoimentos.gerenciar', 'Gerenciar depoimentos de casais'],
+  ['aconselhamento.gerenciar', 'Gerenciar mensagens de aconselhamento (vídeos)'],
+  ['oracoes.gerenciar', 'Ver e gerenciar pedidos de oração (Livro de Orações)'],
+  ['reconhecimento.gerenciar', 'Gerenciar tópicos da seção "Você reconhece algum desses momentos?"'],
 ];
 
 const PERFIS = [
@@ -108,6 +111,49 @@ async function createTables() {
       FOREIGN KEY (criado_por) REFERENCES usuarios(id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS aconselhamentos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      titulo VARCHAR(160) NOT NULL,
+      descricao TEXT NULL,
+      video_url VARCHAR(500) NOT NULL,
+      publicado TINYINT(1) NOT NULL DEFAULT 0,
+      ordem INT NOT NULL DEFAULT 0,
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      criado_por INT NULL,
+      FOREIGN KEY (criado_por) REFERENCES usuarios(id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS pedidos_oracao (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nome_casal VARCHAR(120) NOT NULL,
+      motivo TEXT NULL,
+      deseja_contato TINYINT(1) NOT NULL DEFAULT 0,
+      telefone VARCHAR(30) NULL,
+      whatsapp VARCHAR(30) NULL,
+      atendido TINYINT(1) NOT NULL DEFAULT 0,
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS topicos_reconhecimento (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      titulo VARCHAR(160) NOT NULL,
+      texto TEXT NOT NULL,
+      ativo TINYINT(1) NOT NULL DEFAULT 1,
+      ordem INT NOT NULL DEFAULT 0,
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      criado_por INT NULL,
+      FOREIGN KEY (criado_por) REFERENCES usuarios(id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `);
 }
 
 async function seedPerfisEPermissoes() {
@@ -177,10 +223,35 @@ async function seedConfigRows() {
   );
 }
 
+const TOPICOS_RECONHECIMENTO = [
+  ['Quando o diálogo diminui.', 'As conversas ficam cada vez mais curtas, só sobre o necessário do dia a dia. O casal perde o hábito de se ouvir de verdade, de compartilhar o que sente e o que pensa.'],
+  ['Quando surgem mágoas.', 'Palavras ou atitudes machucam e ficam guardadas, sem espaço para pedir perdão ou reconciliar. Aos poucos, essas mágoas viram distância.'],
+  ['Quando a rotina distancia.', 'Entre trabalho, filhos e compromissos, o casal esquece de cuidar um do outro. O corre-corre do dia a dia toma o lugar do tempo dedicado ao casamento.'],
+  ['Quando os problemas aumentam.', 'As dificuldades se acumulam e parecem maiores do que a capacidade do casal de resolvê-las juntos. O peso vira desânimo.'],
+  ['Quando a família precisa reencontrar seu caminho.', 'Momentos de crise fazem o casal perder de vista o propósito que os uniu. É hora de buscar, juntos, uma direção nova.'],
+];
+
+async function seedTopicosReconhecimento() {
+  const [existing] = await pool.query('SELECT COUNT(*) AS n FROM topicos_reconhecimento');
+  if (existing[0].n > 0) {
+    console.log('Tópicos de reconhecimento já existem — nada a fazer.');
+    return;
+  }
+  for (let i = 0; i < TOPICOS_RECONHECIMENTO.length; i++) {
+    const [titulo, texto] = TOPICOS_RECONHECIMENTO[i];
+    await pool.query(
+      'INSERT INTO topicos_reconhecimento (titulo, texto, ativo, ordem) VALUES (?, ?, 1, ?)',
+      [titulo, texto, i]
+    );
+  }
+  console.log(`Seed: ${TOPICOS_RECONHECIMENTO.length} tópicos de reconhecimento criados (texto inicial sugerido — revisar/editar pelo admin).`);
+}
+
 async function main() {
   await createTables();
   const perfilId = await seedPerfisEPermissoes();
   await seedConfigRows();
+  await seedTopicosReconhecimento();
   await seedAdminUser(perfilId);
   console.log('Seed concluído.');
   process.exit(0);

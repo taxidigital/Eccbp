@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QLSWN8VC5E"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QLSWN8VC5E');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="theme-color" content="#12283A">
+<meta name="description" content="ECC Bom Pastor — um encontro com Cristo que fortalece o casamento e a família.">
+<link rel="icon" type="image/jpeg" href="/assets/logo.jpeg">
+<title>ECC Bom Pastor | Encontro de Casais com Cristo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#12283A;
+    --slate:#2C5877;
+    --gold:#C79A4B;
+    --gold-soft:#E9D6AC;
+    --cream:#FAF5EA;
+    --white:#FFFFFF;
+    --ink:#26221C;
+    --line:rgba(18,40,58,0.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    color:var(--navy);
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px;}
+  section{padding:96px 0;}
+  @media (max-width:720px){ section{padding:64px 0;} }
+
+  .rings{width:40px; height:24px; display:inline-block; flex:none;}
+  .rings circle{fill:none; stroke:var(--gold); stroke-width:2.2;}
+
+  /* header */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background:#FFFFFF;
+    border-bottom:1px solid var(--line);
+    transition:box-shadow .3s ease;
+  }
+  header.is-scrolled{ box-shadow:0 4px 24px rgba(18,40,58,0.10); }
+  .nav{position:relative; display:flex; align-items:center; justify-content:space-between; padding:14px 28px; max-width:1400px; margin:0 auto;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:600; font-size:24px; color:var(--navy); white-space:nowrap;}
+  .brand img{height:96px; width:auto;}
+  .navlinks{display:flex; gap:22px; font-size:14px; font-weight:500; color:var(--navy);}
+  .navlinks a{opacity:0.75; transition:opacity .2s; white-space:nowrap;}
+  .navlinks a:hover{opacity:1;}
+  .navside{display:flex; align-items:center; gap:14px;}
+  .navcta{
+    background:var(--navy); color:var(--cream); padding:10px 20px; border-radius:2px;
+    font-size:13.5px; font-weight:600; letter-spacing:.02em; white-space:nowrap;
+  }
+  .navcta:hover{background:var(--slate);}
+  .navtoggle{
+    display:none; font-size:13px; font-weight:600; color:var(--navy);
+    background:none; border:1px solid var(--line); padding:8px 14px; border-radius:2px; cursor:pointer;
+  }
+  @media (max-width:1220px){
+    .navlinks{
+      display:none; position:absolute; top:100%; left:0; right:0;
+      flex-direction:column; gap:0; background:var(--cream); border-bottom:1px solid var(--line);
+    }
+    .navlinks.is-open{display:flex;}
+    .navlinks a{padding:14px 28px; border-bottom:1px solid var(--line); opacity:1;}
+    .navtoggle{display:block;}
+    .brand img{height:44px;}
+  }
+  @media (max-width:480px){
+    .brand span{display:none;}
+    .navcta{padding:10px 14px; font-size:12.5px;}
+  }
+
+  /* hero */
+  .hero{
+    padding:170px 0 100px;
+    position:relative;
+    background:
+      radial-gradient(ellipse at 18% 0%, rgba(199,154,75,0.14), transparent 55%),
+      var(--cream);
+    overflow:hidden;
+  }
+  .hero-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:center;}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} .hero{padding-top:130px;} }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:12.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--slate); margin-bottom:22px;
+  }
+  .hero h1{ font-size:clamp(32px,4.6vw,50px); line-height:1.14; margin-bottom:22px; }
+  .hero h1 em{font-style:italic; color:var(--gold);}
+  .hero p.lead{ font-size:17.5px; color:#4B4438; max-width:480px; margin-bottom:34px; }
+  .hero-ctas{display:flex; gap:16px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:15px 26px; border-radius:2px; font-size:14.5px; font-weight:600;
+    letter-spacing:.01em; transition:all .2s ease; cursor:pointer; border:none;
+  }
+  .btn-primary{background:var(--navy); color:var(--cream);}
+  .btn-primary:hover{background:var(--slate); transform:translateY(-1px);}
+  .btn-ghost{border:1px solid var(--navy); color:var(--navy); background:none;}
+  .btn-ghost:hover{background:var(--navy); color:var(--cream);}
+
+  .hero-card{
+    background:var(--white); border:1px solid var(--line); border-radius:6px;
+    overflow:hidden; box-shadow:0 24px 60px -30px rgba(18,40,58,0.35);
+  }
+  .hero-card img{width:100%; height:220px; object-fit:cover;}
+  .hero-card.invite-card{max-width:391px; margin:0 auto;}
+  .hero-card.invite-card img{height:auto; display:block;}
+  .hero-card .hc-body{padding:28px 30px 30px;}
+  .hero-card .cap{font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); margin-bottom:8px;}
+  .hero-card h3{font-size:22px; margin-bottom:18px;}
+  .rows .row{display:flex; justify-content:space-between; gap:16px; padding:12px 0; border-top:1px solid var(--line); font-size:14px;}
+  .rows .row:first-child{border-top:none;}
+  .rows .row span:first-child{color:#7a7264;}
+  .rows .row span:last-child{font-weight:600; text-align:right; color:var(--ink);}
+  .hero-card .btn{width:100%; justify-content:center; margin-top:22px;}
+
+  /* kicker / seções numeradas */
+  .kicker{font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:14px;}
+
+  /* reconhecer (pontos de dor) */
+  .reconhecer h2{font-size:clamp(26px,3.2vw,34px); line-height:1.15; margin-bottom:40px; max-width:620px;}
+  .pain-list{display:flex; flex-direction:column; border-top:1px solid var(--line);}
+  .pain-item{background:transparent; border-bottom:1px solid var(--line);}
+  .pain-toggle{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:24px 4px; background:none; border:none; cursor:pointer; text-align:left;
+  }
+  .pain-title{
+    display:flex; align-items:baseline; gap:10px;
+    font-family:'Fraunces',serif; font-size:17.5px; font-weight:600; color:var(--navy);
+  }
+  .pain-title::before{content:'—'; color:var(--gold); font-family:'Inter',sans-serif; font-size:15px;}
+  .pain-more{
+    flex:none; font-size:13.5px; font-weight:600; color:var(--gold); white-space:nowrap;
+    letter-spacing:.02em;
+  }
+  .pain-body{display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease;}
+  .pain-body-inner{overflow:hidden;}
+  .pain-body-inner p{margin:0; padding:0 4px 26px; color:#4B4438; font-size:15.5px; line-height:1.65; max-width:640px;}
+  .pain-item.is-open .pain-body{grid-template-rows:1fr;}
+  .pain-note{margin-top:32px; font-size:16px; color:#4B4438; max-width:560px;}
+
+  /* sobre / comunidade */
+  .about-grid{display:grid; grid-template-columns:0.85fr 1.15fr; gap:56px; align-items:center;}
+  @media (max-width:860px){ .about-grid{grid-template-columns:1fr; gap:28px;} }
+  .about-grid img{border-radius:6px; width:100%; height:340px; object-fit:cover;}
+  .about-copy h2{font-size:clamp(26px,3.2vw,34px); line-height:1.15; margin-bottom:18px;}
+  .about-copy p{color:#4B4438; margin-bottom:16px; font-size:16px;}
+  .about-copy p:last-child{margin-bottom:0;}
+
+  .banner{position:relative; height:340px; overflow:hidden;}
+  .banner img{width:100%; height:100%; object-fit:cover;}
+  .banner::after{content:''; position:absolute; inset:0; background:linear-gradient(0deg, rgba(18,40,58,0.75), rgba(18,40,58,0.15));}
+  .banner-text{position:absolute; inset:0; display:flex; align-items:flex-end; padding:36px;}
+  .banner-text p{font-family:'Fraunces',serif; font-style:italic; color:var(--cream); font-size:clamp(18px,2.6vw,26px); max-width:560px;}
+
+  /* depoimentos */
+  .t-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  @media (max-width:860px){ .t-grid{grid-template-columns:1fr;} }
+  .t-card{background:var(--white); border:1px solid var(--line); padding:32px 28px; border-radius:3px;}
+  .t-card p{font-family:'Fraunces',serif; font-size:16.5px; font-style:italic; color:var(--navy); margin-bottom:16px;}
+  .t-placeholder{grid-column:1/-1; border-left:2px solid var(--gold); border-radius:0; background:transparent; border-top:none; border-right:none; border-bottom:none; padding:4px 0 4px 24px;}
+  .t-placeholder p{margin-bottom:12px; font-size:15.5px;}
+  .t-placeholder p:last-child{margin-bottom:0;}
+  .t-who{display:flex; align-items:center; gap:12px; margin-top:6px;}
+  .t-avatar{width:38px; height:38px; border-radius:50%; background:var(--gold-soft); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:600; color:var(--navy); font-size:14px; flex:none;}
+  .t-who .name{font-size:14px; font-weight:600; color:var(--ink);}
+  .t-video{position:relative; width:100%; padding-bottom:56.25%; height:0; margin:14px 0; border-radius:6px; overflow:hidden;}
+  .t-video iframe{position:absolute; top:0; left:0; width:100%; height:100%; border:0;}
+
+  /* aconselhamento */
+  .ac-card .t-video{margin-top:0;}
+  .ac-title{font-family:'Fraunces',serif; font-size:18px; font-weight:600; color:var(--navy); margin:16px 0 8px;}
+  .t-card p.ac-desc{font-family:'Inter',sans-serif; font-style:normal; font-size:14.5px; color:#4B4438; line-height:1.5; margin-bottom:0;}
+
+  /* livro de orações */
+  .pray-intro{max-width:620px; color:#4B4438; font-size:16px; line-height:1.6; margin-bottom:36px;}
+  .pray-card{background:var(--white); border:1px solid var(--line); border-radius:6px; padding:40px; max-width:560px; box-shadow:0 24px 60px -30px rgba(18,40,58,0.28);}
+  @media (max-width:600px){ .pray-card{padding:28px 22px;} }
+  .pray-card form > label{display:block; font-size:13px; font-weight:700; letter-spacing:.02em; color:var(--navy); margin:22px 0 8px;}
+  .pray-card form > label:first-child{margin-top:0;}
+  .pray-card .opt{font-weight:400; color:#8a8272; letter-spacing:0;}
+  .pray-card input[type=text], .pray-card input[type=tel], .pray-card textarea{
+    width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:4px;
+    font-family:'Inter',sans-serif; font-size:15px; color:var(--ink); background:var(--cream);
+  }
+  .pray-card input[type=text]:focus, .pray-card input[type=tel]:focus, .pray-card textarea:focus{outline:none; border-color:var(--navy);}
+  .pray-card textarea{resize:vertical; min-height:90px; font-family:inherit;}
+  .pray-checkbox{display:flex; align-items:center; gap:10px; font-size:14.5px; font-weight:600; color:var(--navy); cursor:pointer;}
+  .pray-checkbox input{width:auto; margin:0;}
+  .pray-contato-fields{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:6px;}
+  @media (max-width:520px){ .pray-contato-fields{grid-template-columns:1fr;} }
+  .pray-contato-fields > div label{margin:0 0 8px !important;}
+  #pray-submit-btn{margin-top:28px; width:100%; justify-content:center;}
+  .pray-msg{margin-top:14px; font-size:14px; color:#b3261e; min-height:1.2em;}
+  .pray-success{text-align:center; padding:12px 4px;}
+  .pray-success .ring{
+    width:52px; height:52px; margin:0 auto 20px; border-radius:50%; background:var(--gold-soft);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pray-success h3{font-size:22px; margin-bottom:10px;}
+  .pray-success p{color:#4B4438; font-size:15px; max-width:400px; margin:0 auto;}
+
+  /* próximo encontro / cta */
+  .cta-section{
+    background:linear-gradient(135deg, var(--navy), var(--slate));
+    color:var(--cream); position:relative; overflow:hidden;
+  }
+  .cta-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:start;}
+  @media (max-width:860px){ .cta-grid{grid-template-columns:1fr;} }
+  .cta-section .kicker{color:var(--gold-soft);}
+  .cta-section h2{color:var(--cream); font-size:clamp(26px,3.4vw,36px); margin-bottom:18px;}
+  .cta-section p{color:rgba(250,245,234,0.72); font-size:16px; max-width:480px;}
+  .cta-panel{background:rgba(255,255,255,0.06); border:1px solid rgba(250,245,234,0.18); border-radius:6px; padding:32px;}
+  .cta-panel .row{display:flex; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid rgba(250,245,234,0.14); font-size:14.5px;}
+  .cta-panel .row:last-of-type{border-bottom:none;}
+  .cta-panel .row span:first-child{color:rgba(250,245,234,0.6);}
+  .cta-panel .row span:last-child{font-weight:600; text-align:right;}
+  .cta-panel .btn-primary{width:100%; justify-content:center; margin-top:22px; background:var(--gold); color:var(--navy);}
+  .cta-panel .btn-primary:hover{background:var(--gold-soft);}
+  .cta-note{margin-top:14px; font-size:13px; color:rgba(250,245,234,0.6);}
+
+  /* footer */
+  footer{background:var(--navy); color:rgba(250,245,234,0.6); padding:56px 0 32px;}
+  .foot-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px; padding-bottom:36px; border-bottom:1px solid rgba(250,245,234,0.12);}
+  @media (max-width:720px){ .foot-grid{grid-template-columns:1fr; gap:28px;} }
+  footer .brand{color:var(--cream);}
+  footer h4{color:var(--cream); font-size:13px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:16px; font-weight:600;}
+  footer ul{list-style:none;}
+  footer li{margin-bottom:10px; font-size:14.5px;}
+  footer a:hover{color:var(--gold-soft);}
+  .foot-bottom{display:flex; justify-content:space-between; padding-top:24px; font-size:13px; flex-wrap:wrap; gap:12px;}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  .back-to-top{
+    position:fixed; right:20px; bottom:20px; z-index:40; width:44px; height:44px; border-radius:50%;
+    background:var(--navy); color:var(--cream); display:flex; align-items:center; justify-content:center;
+    border:none; cursor:pointer; box-shadow:0 8px 20px rgba(18,40,58,0.28);
+    opacity:0; transform:translateY(10px); pointer-events:none; transition:opacity .25s ease, transform .25s ease, background .2s ease;
+  }
+  .back-to-top.is-visible{opacity:1; transform:translateY(0); pointer-events:auto;}
+  .back-to-top:hover{background:var(--slate);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="#top" class="brand">
+      <img src="/assets/logo.jpeg" alt="Logo ECC Bom Pastor">
+      <span>ECC Bom Pastor</span>
+    </a>
+    <nav class="navlinks">
+      <a href="#o-ecc">O ECC</a>
+      <a href="#comunidade">Comunidade</a>
+      <a href="#historias">Histórias</a>
+      <a href="#aconselhamento">Aconselhamento</a>
+      <a href="#oracoes">Orações</a>
+      <a href="#encontro">Próximo encontro</a>
+    </nav>
+    <div class="navside">
+      <a href="https://forms.gle/5X4RjN8fiYFprBXH6" class="navcta js-link-inscricao" target="_blank" rel="noopener">Fazer minha inscrição</a>
+      <button type="button" class="navtoggle" aria-label="Abrir menu">Menu</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">
+        <svg class="rings" viewBox="0 0 46 26"><circle cx="16" cy="13" r="10"/><circle cx="30" cy="13" r="10"/></svg>
+        ECC Bom Pastor
+      </div>
+      <h1>O casamento é uma <em>caminhada</em>,<br>não uma vida sem dificuldades.</h1>
+      <p class="lead">Cada casal atravessa momentos de silêncio, mágoas e rotina. O ECC existe para caminhar ao lado de quem deseja recolocar Cristo no centro do casamento.</p>
+      <div class="hero-ctas">
+        <a href="#o-ecc" class="btn btn-ghost">Conheça o caminho</a>
+      </div>
+    </div>
+    <div class="hero-card invite-card reveal">
+      <img src="/assets/convite.jpg" alt="Convite ECC Bom Pastor — Encontro de Casais com Cristo, 21 e 22 de novembro">
+    </div>
+  </div>
+</section>
+
+<section class="reconhecer">
+  <div class="wrap">
+    <div class="kicker">02 · reconhecer</div>
+    <h2>Você reconhece algum desses momentos?</h2>
+    <div class="pain-list" id="pain-list">
+      <div class="pain-item reveal">
+        <button type="button" class="pain-toggle" aria-expanded="false">
+          <span class="pain-title">Quando o diálogo diminui.</span>
+          <span class="pain-more">Saiba mais</span>
+        </button>
+        <div class="pain-body"><div class="pain-body-inner"><p>As conversas ficam cada vez mais curtas, só sobre o necessário do dia a dia. O casal perde o hábito de se ouvir de verdade, de compartilhar o que sente e o que pensa.</p></div></div>
+      </div>
+      <div class="pain-item reveal">
+        <button type="button" class="pain-toggle" aria-expanded="false">
+          <span class="pain-title">Quando surgem mágoas.</span>
+          <span class="pain-more">Saiba mais</span>
+        </button>
+        <div class="pain-body"><div class="pain-body-inner"><p>Palavras ou atitudes machucam e ficam guardadas, sem espaço para pedir perdão ou reconciliar. Aos poucos, essas mágoas viram distância.</p></div></div>
+      </div>
+      <div class="pain-item reveal">
+        <button type="button" class="pain-toggle" aria-expanded="false">
+          <span class="pain-title">Quando a rotina distancia.</span>
+          <span class="pain-more">Saiba mais</span>
+        </button>
+        <div class="pain-body"><div class="pain-body-inner"><p>Entre trabalho, filhos e compromissos, o casal esquece de cuidar um do outro. O corre-corre do dia a dia toma o lugar do tempo dedicado ao casamento.</p></div></div>
+      </div>
+      <div class="pain-item reveal">
+        <button type="button" class="pain-toggle" aria-expanded="false">
+          <span class="pain-title">Quando os problemas aumentam.</span>
+          <span class="pain-more">Saiba mais</span>
+        </button>
+        <div class="pain-body"><div class="pain-body-inner"><p>As dificuldades se acumulam e parecem maiores do que a capacidade do casal de resolvê-las juntos. O peso vira desânimo.</p></div></div>
+      </div>
+      <div class="pain-item reveal">
+        <button type="button" class="pain-toggle" aria-expanded="false">
+          <span class="pain-title">Quando a família precisa reencontrar seu caminho.</span>
+          <span class="pain-more">Saiba mais</span>
+        </button>
+        <div class="pain-body"><div class="pain-body-inner"><p>Momentos de crise fazem o casal perder de vista o propósito que os uniu. É hora de buscar, juntos, uma direção nova.</p></div></div>
+      </div>
+    </div>
+    <p class="pain-note">Você não precisa caminhar sozinho por nenhum desses momentos.</p>
+  </div>
+</section>
+
+<section id="o-ecc">
+  <div class="wrap about-grid">
+    <img src="/assets/ecc-comunidade.jpg" alt="Comunidade de casais do ECC Bom Pastor" class="reveal">
+    <div class="about-copy">
+      <div class="kicker">03 · sobre o ecc</div>
+      <h2>Um lugar para cultivar a fé e a vida em família.</h2>
+      <p>Somos casais que encontraram em Cristo força para viver e fortalecer nossos próprios casamentos. Por isso, nos colocamos a serviço de outras famílias.</p>
+      <p>Nosso desejo é acolher, evangelizar, formar e caminhar junto com cada casal, ajudando-o a descobrir ou redescobrir a presença de Cristo em sua casa.</p>
+    </div>
+  </div>
+</section>
+
+<div class="banner" id="comunidade">
+  <img src="/assets/ecc-caminhada-casal.jpg" alt="Casal caminhando junto na fé">
+  <div class="banner-text">
+    <p>"Um vínculo, uma comunidade — nenhum casal precisa caminhar sozinho."</p>
+  </div>
+</div>
+
+<section id="historias">
+  <div class="wrap">
+    <div class="kicker">Histórias que pedem escuta</div>
+    <h2 style="margin-bottom:40px;">Depoimentos de casais do ECC Bom Pastor</h2>
+    <div class="t-grid" id="depoimentos-lista">
+      <div class="t-card t-placeholder" id="depoimentos-placeholder">
+        <p>Este será um espaço para testemunhos de casais do ECC Bom Pastor, publicados somente com autorização e no tempo certo de cada história.</p>
+        <p>Sem relatos fictícios. Com verdade, consentimento e cuidado.</p>
+        <p>Em breve, esta página poderá acolher relatos em vídeo, sempre com a autorização de cada casal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="aconselhamento">
+  <div class="wrap">
+    <div class="kicker">Mensagens para os casais</div>
+    <h2 style="margin-bottom:40px;">Aconselhamento</h2>
+    <div class="t-grid" id="aconselhamento-lista">
+      <div class="t-card t-placeholder" id="aconselhamento-placeholder">
+        <p>Em breve, mensagens em vídeo para apoiar os casais em diferentes momentos da caminhada — fé, comunicação, família e vida a dois.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="oracoes">
+  <div class="wrap">
+    <div class="kicker">Livro de Orações</div>
+    <h2 style="margin-bottom:16px;">Deixe seu pedido de oração</h2>
+    <p class="pray-intro">Nossa comunidade se une em oração por cada casal. Compartilhe o que estiver em seu coração — com toda confidencialidade.</p>
+
+    <div class="pray-card reveal">
+      <form id="pray-form">
+        <label for="pray-nome">Nome do casal</label>
+        <input type="text" id="pray-nome" name="nome" required placeholder="Ex.: João e Maria">
+
+        <label for="pray-motivo">Motivo da oração <span class="opt">(opcional)</span></label>
+        <textarea id="pray-motivo" name="motivo" rows="4" placeholder="Conte brevemente o que está em seu coração"></textarea>
+
+        <label class="pray-checkbox" for="pray-deseja-contato" style="margin-top:22px;">
+          <input type="checkbox" id="pray-deseja-contato" name="deseja_contato">
+          Gostaria de receber contato da nossa equipe
+        </label>
+
+        <div id="pray-contato-fields" class="pray-contato-fields" style="display:none;">
+          <div>
+            <label for="pray-telefone">Telefone</label>
+            <input type="tel" id="pray-telefone" name="telefone" placeholder="(11) 99999-9999">
+          </div>
+          <div>
+            <label for="pray-whatsapp">WhatsApp</label>
+            <input type="tel" id="pray-whatsapp" name="whatsapp" placeholder="(11) 99999-9999">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="pray-submit-btn">Enviar pedido</button>
+        <div class="pray-msg" id="pray-msg"></div>
+      </form>
+
+      <div class="pray-success" id="pray-success" style="display:none;">
+        <div class="ring">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12283A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h3>Pedido encaminhado</h3>
+        <p>Recebemos seu pedido com carinho. Nossa comunidade vai orar por vocês.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="encontro">
+  <div class="wrap cta-grid">
+    <div>
+      <div class="kicker">04 · dar o próximo passo</div>
+      <h2>Vagas limitadas. Garanta a sua ou presenteie um casal querido.</h2>
+      <p>Um fim de semana pensado para casais recolocarem Cristo no centro do casamento — dois dias, sábado e domingo, com atividades surpresa.</p>
+    </div>
+    <div class="cta-panel reveal">
+      <div class="row"><span>Quando</span><span id="encontro-data-2">Próximo encontro · 2026</span></div>
+      <div class="row"><span>Onde</span><span id="encontro-local-2">Grande São Paulo</span></div>
+      <div class="row"><span>Investimento</span><span id="encontro-preco-2">R$ 800,00 por casal</span></div>
+      <div class="row"><span>Parcelamento</span><span id="encontro-parcelamento">Consulte opções de parcelamento</span></div>
+      <p class="cta-note">Presença local em construção. O local será informado pela equipe.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:600; font-size:18px; margin-bottom:14px;">
+          <img src="/assets/logo.jpeg" alt="Logo ECC Bom Pastor" style="height:96px; width:auto;">
+          ECC Bom Pastor
+        </div>
+        <p style="max-width:280px; font-size:14px;">Um serviço de evangelização e fortalecimento das famílias.</p>
+      </div>
+      <div>
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="#o-ecc">O ECC</a></li>
+          <li><a href="#comunidade">Comunidade</a></li>
+          <li><a href="#historias">Histórias</a></li>
+          <li><a href="#aconselhamento">Aconselhamento</a></li>
+          <li><a href="#oracoes">Orações</a></li>
+          <li><a href="#encontro">Próximo encontro</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <ul>
+          <li id="contato-status">Canal de contato em atualização</li>
+          <li id="contato-detalhe" style="display:none;"></li>
+          <li><a id="contato-whatsapp-link" href="#" style="display:none;" target="_blank" rel="noopener">Falar no WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 ECC Bom Pastor · Movimento de Pastoral Familiar</span>
+      <span>Feito com carinho para as famílias da nossa comunidade</span>
+    </div>
+  </div>
+</footer>
+
+<button type="button" class="back-to-top" aria-label="Voltar ao topo">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+
+<script src="/assets/site-dynamic.js"></script>
+
+</body>
+</html>

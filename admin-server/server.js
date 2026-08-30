@@ -8,6 +8,7 @@ const { requireAuth } = require('./middleware/auth');
 
 const app = express();
 app.disable('x-powered-by');
+app.set('trust proxy', 1); // nginx termina o TLS e envia X-Forwarded-Proto
 app.use(express.json());
 
 const sessionStore = new MySQLStore({}, pool);
@@ -22,7 +23,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
-      secure: false, // TODO: true quando eccbp.com.br tiver SSL via Certbot
+      secure: true, // eccbp.com.br tem SSL via Certbot desde 2026-08-29
       maxAge: 8 * 60 * 60 * 1000, // 8h
     },
   })
@@ -35,6 +36,7 @@ app.use('/api/public', require('./routes/public'));
 app.use('/admin/api', require('./routes/auth'));
 app.use('/admin/api/usuarios', require('./routes/usuarios'));
 app.use('/admin/api/perfis', require('./routes/perfis'));
+app.use('/admin/api/pedidos-oracao', require('./routes/oracoes'));
 app.use('/admin/api', require('./routes/conteudo'));
 
 // Painel estático — protegido por sessão (exceto login e assets públicos do login)

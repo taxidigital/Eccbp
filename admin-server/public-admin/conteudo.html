@@ -63,7 +63,7 @@
             <textarea id="dep-texto" rows="4" required></textarea>
             <label for="dep-video">Link do vídeo no YouTube (opcional)</label>
             <input type="url" id="dep-video" placeholder="https://www.youtube.com/watch?v=..." />
-            <div id="dep-video-preview" class="hidden" style="margin-top:.6rem; position:relative; width:100%; max-width:360px; padding-bottom:56.25%; height:0; border-radius:8px; overflow:hidden;"></div>
+            <div id="dep-video-preview" class="hidden" style="margin-top:.6rem; position:relative; width:100%; max-width:360px; aspect-ratio:16/9; border-radius:8px; overflow:hidden;"></div>
             <div class="error-msg" id="dep-video-msg"></div>
             <label><input type="checkbox" id="dep-autorizado" style="width:auto; display:inline;" /> Casal autorizou a publicação</label>
             <label><input type="checkbox" id="dep-publicado" style="width:auto; display:inline;" /> Publicado no site</label>
@@ -78,6 +78,67 @@
         <table>
           <thead><tr><th>Casal</th><th>Vídeo</th><th>Autorizado</th><th>Publicado</th><th></th></tr></thead>
           <tbody id="dep-tbody"></tbody>
+        </table>
+      </section>
+
+      <section class="card" id="aconselhamento-card">
+        <div class="toolbar">
+          <h3>Aconselhamento</h3>
+          <button class="btn-secondary" id="new-acon-btn">+ Novo vídeo</button>
+        </div>
+
+        <div class="card hidden" id="acon-form-card" style="box-shadow:none; border:1px solid #d9dee3;">
+          <form id="acon-form">
+            <input type="hidden" id="acon-id" />
+            <label for="acon-titulo">Título da mensagem</label>
+            <input type="text" id="acon-titulo" required />
+            <label for="acon-descricao">Descrição (opcional)</label>
+            <textarea id="acon-descricao" rows="3"></textarea>
+            <label for="acon-video">Link do vídeo no YouTube</label>
+            <input type="url" id="acon-video" placeholder="https://www.youtube.com/watch?v=..." required />
+            <div id="acon-video-preview" class="hidden" style="margin-top:.6rem; position:relative; width:100%; max-width:360px; aspect-ratio:16/9; border-radius:8px; overflow:hidden;"></div>
+            <div class="error-msg" id="acon-video-msg"></div>
+            <label><input type="checkbox" id="acon-publicado" style="width:auto; display:inline;" /> Publicado no site</label>
+            <div style="margin-top:1rem; display:flex; gap:.6rem;">
+              <button type="submit" class="btn-primary" style="width:auto;">Salvar</button>
+              <button type="button" class="btn-secondary" id="acon-cancel-btn">Cancelar</button>
+            </div>
+            <div class="error-msg" id="acon-form-msg"></div>
+          </form>
+        </div>
+
+        <table>
+          <thead><tr><th>Título</th><th>Vídeo</th><th>Publicado</th><th></th></tr></thead>
+          <tbody id="acon-tbody"></tbody>
+        </table>
+      </section>
+
+      <section class="card" id="reconhecimento-card">
+        <div class="toolbar">
+          <h3>Você reconhece algum desses momentos?</h3>
+          <button class="btn-secondary" id="new-reco-btn">+ Novo tópico</button>
+        </div>
+        <p style="margin-top:-.5rem; color:#64707a; font-size:.85rem;">Tópicos exibidos como lista expansível no site. Use as setas para definir a ordem. Tópicos inativos não aparecem no site.</p>
+
+        <div class="card hidden" id="reco-form-card" style="box-shadow:none; border:1px solid #d9dee3;">
+          <form id="reco-form">
+            <input type="hidden" id="reco-id" />
+            <label for="reco-titulo">Título (curto, aparece sempre visível)</label>
+            <input type="text" id="reco-titulo" required placeholder="Ex.: Quando o diálogo diminui." />
+            <label for="reco-texto">Texto (aparece ao expandir o tópico)</label>
+            <textarea id="reco-texto" rows="4" required></textarea>
+            <label><input type="checkbox" id="reco-ativo" style="width:auto; display:inline;" checked /> Ativo (visível no site)</label>
+            <div style="margin-top:1rem; display:flex; gap:.6rem;">
+              <button type="submit" class="btn-primary" style="width:auto;">Salvar</button>
+              <button type="button" class="btn-secondary" id="reco-cancel-btn">Cancelar</button>
+            </div>
+            <div class="error-msg" id="reco-form-msg"></div>
+          </form>
+        </div>
+
+        <table>
+          <thead><tr><th>Ordem</th><th>Título</th><th>Ativo</th><th></th></tr></thead>
+          <tbody id="reco-tbody"></tbody>
         </table>
       </section>
     </main>
